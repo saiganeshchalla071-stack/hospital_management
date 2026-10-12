@@ -1,0 +1,257 @@
+{
+  "info": {
+    "_postman_id": "a9c7b140-5e34-4b55-89cb-72439d5df68b",
+    "name": "CarePulse Hospital Management System API",
+    "description": "Comprehensive Postman collection for testing the Spring Boot Hospital Management REST APIs including Auth, RBAC, Appointments, EMR, Prescriptions, and Invoicing.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8085/api", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "doctorToken", "value": "", "type": "string" },
+    { "key": "patientToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hospital.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Doctor Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dr.sarah@hospital.com\",\n  \"password\": \"Doctor@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Patient Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@gmail.com\",\n  \"password\": \"Patient@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Alice Walker\",\n  \"email\": \"alice.w@gmail.com\",\n  \"password\": \"Patient@123\",\n  \"phone\": \"+1-555-0999\",\n  \"dateOfBirth\": \"1994-06-15\",\n  \"address\": \"450 Lexington Ave, New York\",\n  \"emergencyContact\": \"+1-555-0888\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Current Authenticated User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Departments",
+      "item": [
+        {
+          "name": "Get All Departments",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/departments", "host": ["{{baseUrl}}"], "path": ["departments"] }
+          }
+        },
+        {
+          "name": "Create Department (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dermatology\",\n  \"description\": \"Comprehensive skin care, allergy testing, and cosmetic dermatology.\",\n  \"location\": \"Wing B - 1st Floor, Suite 110\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/departments", "host": ["{{baseUrl}}"], "path": ["departments"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Doctors",
+      "item": [
+        {
+          "name": "Get Active Doctors",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/doctors/active", "host": ["{{baseUrl}}"], "path": ["doctors", "active"] }
+          }
+        },
+        {
+          "name": "Search Doctors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/search?query=Cardio",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "search"],
+              "query": [{ "key": "query", "value": "Cardio" }]
+            }
+          }
+        },
+        {
+          "name": "Create Doctor (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Dr. Alexander Stone\",\n  \"email\": \"dr.stone@hospital.com\",\n  \"password\": \"Doctor@123\",\n  \"phone\": \"+1-555-0199\",\n  \"departmentId\": 1,\n  \"specialization\": \"Pediatric Cardiology\",\n  \"qualification\": \"MD, FACC\",\n  \"experienceYears\": 8,\n  \"consultationFee\": 160.00,\n  \"biography\": \"Expert in congenital cardiac anomalies in adolescents.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/doctors", "host": ["{{baseUrl}}"], "path": ["doctors"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Appointments",
+      "item": [
+        {
+          "name": "Book Appointment (Patient)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": 1,\n  \"appointmentDate\": \"2026-10-20\",\n  \"startTime\": \"10:00:00\",\n  \"reason\": \"Follow-up cardiovascular evaluation\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/appointments", "host": ["{{baseUrl}}"], "path": ["appointments"] }
+          }
+        },
+        {
+          "name": "Get My Appointments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{patientToken}}" }],
+            "url": { "raw": "{{baseUrl}}/appointments/my-appointments", "host": ["{{baseUrl}}"], "path": ["appointments", "my-appointments"] }
+          }
+        },
+        {
+          "name": "Update Appointment Status (Doctor/Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/appointments/2/status", "host": ["{{baseUrl}}"], "path": ["appointments", "2", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Medical Records & Prescriptions",
+      "item": [
+        {
+          "name": "Record Diagnosis (Doctor Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": 2,\n  \"diagnosis\": \"Tension-Type Headache & Cervical Strain\",\n  \"clinicalNotes\": \"Vitals normal. Neurological exam intact. Recommended ergonomics modification.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/medical-records", "host": ["{{baseUrl}}"], "path": ["medical-records"] }
+          }
+        },
+        {
+          "name": "Issue Prescription (Doctor Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{doctorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medicalRecordId\": 1,\n  \"instructions\": \"Stay hydrated and avoid screen glare for 48 hours.\",\n  \"items\": [\n    {\n      \"medicineName\": \"Paracetamol\",\n      \"dosage\": \"650mg\",\n      \"frequency\": \"Twice daily as needed (1-0-1)\",\n      \"duration\": \"3 days\",\n      \"additionalInstructions\": \"Take with food\"\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/prescriptions", "host": ["{{baseUrl}}"], "path": ["prescriptions"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Billing & Dashboard",
+      "item": [
+        {
+          "name": "Get All Bills (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/bills", "host": ["{{baseUrl}}"], "path": ["bills"] }
+          }
+        },
+        {
+          "name": "Settle Bill (Patient/Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{patientToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentStatus\": \"PAID\",\n  \"paymentMethod\": \"CARD\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/bills/2/payment-status", "host": ["{{baseUrl}}"], "path": ["bills", "2", "payment-status"] }
+          }
+        },
+        {
+          "name": "Admin Dashboard Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/dashboard", "host": ["{{baseUrl}}"], "path": ["admin", "dashboard"] }
+          }
+        }
+      ]
+    }
+  ]
+}
